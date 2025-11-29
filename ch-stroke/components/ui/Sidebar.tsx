@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { Users, FileText, Calendar, Settings, Briefcase, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { LayoutDashboard, Users, Bell, MessageCircle, Bot, Phone, Activity, Calendar, Settings, FileText, ChevronLeft, ChevronRight, X } from "lucide-react";
 
 interface SidebarProps {
   role?: "worker" | "patient";
@@ -53,10 +53,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ role = "worker" }) => {
   }
   // For workers we show a compact icon-only sidebar (collapsed) as requested.
   const workerItems = [
-    { href: "/dashboard", label: "Dashboard", icon: Briefcase },
+    { href: "/", label: "Overview", icon: LayoutDashboard },
     { href: "/worker/patients", label: "Patients", icon: Users },
-    { href: "/worker/alerts", label: "Alerts", icon: FileText },
-    { href: "/worker/simulator", label: "Simulator", icon: Calendar },
+    { href: "/worker/alerts", label: "Alerts", icon: Bell },
+    { href: "/worker/messages", label: "Messages", icon: MessageCircle },
+    { href: "/worker/chatbot", label: "AI Chatbot", icon: Bot },
+    { href: "/worker/calls", label: "Calls", icon: Phone },
+    { href: "/worker/vitals", label: "Vitals", icon: Activity },
     { href: "/worker/settings", label: "Settings", icon: Settings },
   ];
 

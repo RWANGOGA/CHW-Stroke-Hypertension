@@ -1,45 +1,103 @@
-import React from "react";
+"use client"
 
-type AlertItem = {
-	id: string;
-	patient: string;
-	level: "low" | "moderate" | "high";
-	reason: string;
-	timestamp: string;
-};
+import { useState } from "react"
+import { Sidebar } from "@/components/sidebar"
+import { Header } from "@/components/header"
+import { AlertCard } from "@/components/alert-card"
+import { RiskCard } from "@/components/risk-card"
+import { aiAlerts, patients } from "@/lib/simulated-data"
+import { AlertTriangle, Clock, CheckCircle, Bell } from "lucide-react"
+import { cn } from "@/lib/utils"
 
-const sampleAlerts: AlertItem[] = [
-	{ id: "A1", patient: "P2", level: "high", reason: "Chest pain reported + rising HR", timestamp: "2025-11-28T09:12:00Z" },
-	{ id: "A2", patient: "P5", level: "moderate", reason: "Low steps 3 days + HR drift", timestamp: "2025-11-29T07:20:00Z" },
-	{ id: "A3", patient: "P3", level: "low", reason: "Missed medication (self-report)", timestamp: "2025-11-27T15:30:00Z" },
-];
+const tabs = ["pending", "acknowledged", "resolved", "all"] as const
 
 export default function AlertsPage() {
-	return (
-		<section>
-			<h2 className="heading-md mb-4">Alerts</h2>
-			<p className="mb-4 text-sm text-muted-foreground">AI-triage alerts generated from simulated data.</p>
+  const [activeTab, setActiveTab] = useState<(typeof tabs)[number]>("pending")
 
-			<div className="space-y-3">
-				{sampleAlerts.map((a) => (
-					<div key={a.id} className="p-3 bg-card border rounded-md flex items-start justify-between">
-						<div>
-							<div className="flex items-center gap-3">
-								<div className={
-									"w-3 h-3 rounded-full " + (a.level === "high" ? "bg-destructive" : a.level === "moderate" ? "bg-amber-400" : "bg-green-400")
-								} />
-								<div className="text-sm font-medium">{a.patient} — {a.reason}</div>
-							</div>
-							<div className="text-xs text-muted-foreground mt-1">{new Date(a.timestamp).toLocaleString()}</div>
-						</div>
-						<div className="flex items-center gap-2">
-							<button className="px-3 py-1 rounded-md bg-primary-foreground text-white">View</button>
-							<button className="px-3 py-1 rounded-md border">Snooze</button>
-						</div>
-					</div>
-				))}
-			</div>
-		</section>
-	);
+  const pendingCount = aiAlerts.filter((a) => a.status === "pending").length
+  const acknowledgedCount = aiAlerts.filter((a) => a.status === "acknowledged").length
+  const resolvedCount = aiAlerts.filter((a) => a.status === "resolved").length
+
+  const filteredAlerts = activeTab === "all" ? aiAlerts : aiAlerts.filter((a) => a.status === activeTab)
+
+  const getPatientName = (patientId: string) => {
+    return patients.find((p) => p.id === patientId)?.name || "Unknown"
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Sidebar />
+      <div className="pl-[72px]">
+        <Header title="Alerts" subtitle="AI-generated alerts and recommended actions" />
+        <main className="p-6 space-y-6">
+          {/* Stats */}
+          <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+            <RiskCard title="Total Alerts" value={aiAlerts.length} icon={Bell} subtitle="All time" />
+            <RiskCard title="Pending" value={pendingCount} icon={Clock} variant="danger" subtitle="Needs action" />
+            <RiskCard
+              title="Acknowledged"
+              value={acknowledgedCount}
+              icon={AlertTriangle}
+              variant="warning"
+              subtitle="In progress"
+            />
+            <RiskCard
+              title="Resolved"
+              value={resolvedCount}
+              icon={CheckCircle}
+              variant="success"
+              subtitle="Completed"
+            />
+          </div>
+
+          {/* Tabs */}
+          <div className="flex gap-2 border-b border-border pb-2">
+            {tabs.map((tab) => {
+              const count =
+                tab === "all"
+                  ? aiAlerts.length
+                  : tab === "pending"
+                    ? pendingCount
+                    : tab === "acknowledged"
+                      ? acknowledgedCount
+                      : resolvedCount
+
+              return (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={cn(
+                    "px-4 py-2 text-sm font-medium rounded-lg transition-colors capitalize",
+                    activeTab === tab ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-accent",
+                  )}
+                >
+                  {tab} ({count})
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Alerts Grid */}
+          <div className="grid gap-4 md:grid-cols-2">
+            {filteredAlerts.map((alert) => (
+              <div key={alert.id} className="relative">
+                <div className="absolute -top-2 -left-2 px-2 py-0.5 bg-card border border-border/50 rounded text-xs font-medium text-muted-foreground">
+                  {getPatientName(alert.patientId)}
+                </div>
+                <AlertCard alert={alert} />
+              </div>
+            ))}
+          </div>
+
+          {filteredAlerts.length === 0 && (
+            <div className="text-center py-12">
+              <CheckCircle className="h-12 w-12 mx-auto text-emerald-500 mb-3" />
+              <h3 className="font-semibold">No {activeTab} alerts</h3>
+              <p className="text-sm text-muted-foreground">All caught up!</p>
+            </div>
+          )}
+        </main>
+      </div>
+    </div>
+  )
 }
-
