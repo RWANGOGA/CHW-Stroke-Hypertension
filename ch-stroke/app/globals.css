@@ -103,6 +103,51 @@
   --sidebar-ring: hsl(247, 37%, 91%);
 }
 
+/* Brand blue used in the provided screenshots */
+:root {
+  --brand-blue: #2f6fe6;
+  --brand-blue-contrast: #ffffff;
+}
+
+/* Utility classes for branding */
+.brand-sidebar {
+  background: var(--brand-blue) !important;
+  color: var(--brand-blue-contrast) !important;
+}
+
+.brand-sidebar a,
+.brand-sidebar .text, .brand-sidebar .text-sm {
+  color: var(--brand-blue-contrast) !important;
+}
+
+.header-message-btn {
+  background: var(--brand-blue);
+  color: var(--brand-blue-contrast);
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+}
+
+.header-message-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: var(--destructive);
+  color: #ffffff;
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.12);
+}
+
 @theme {
   --breakpoint-xl: 80rem;
   --breakpoint-2xl: 80rem;

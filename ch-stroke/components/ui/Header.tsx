@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { Bell, User, LogOut, Settings as SettingsIcon, Search } from "lucide-react";
+import { Bell, User, LogOut, Settings as SettingsIcon, Search, Menu, ChevronLeft, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 
@@ -14,9 +14,22 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ title, avatarSrc }) => {
   const [open, setOpen] = useState(false);
   const [openSearch, setOpenSearch] = useState(false);
+  const [messageCount, setMessageCount] = useState<number>(3);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   const SearchModal = dynamic(() => import("./SearchModal"), { ssr: false });
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      // Ctrl/Cmd + K to open search
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setOpenSearch((v) => !v);
+      }
+    }
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, []);
 
   useEffect(() => {
     function onDoc(e: MouseEvent) {
@@ -33,6 +46,24 @@ export const Header: React.FC<HeaderProps> = ({ title, avatarSrc }) => {
   return (
     <header className="relative flex items-center justify-between px-4 py-3 border-b bg-white/80 backdrop-blur-sm">
       <div className="flex items-center gap-3">
+        {/* Mobile hamburger to toggle sidebar overlay */}
+        <button
+          aria-label="Open sidebar"
+          title="Open sidebar"
+          onClick={() => window.dispatchEvent(new CustomEvent('sidebar:toggle'))}
+          className="p-2 rounded-md mr-2 md:hidden"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+        {/* Divider button: toggle collapse/expand of sidebar */}
+        <button
+          aria-label="Toggle sidebar collapse"
+          title="Toggle sidebar collapse"
+          onClick={() => window.dispatchEvent(new CustomEvent('sidebar:collapse'))}
+          className="p-2 rounded-md mr-2 hidden md:inline-flex hover:bg-muted/50"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </button>
         <h1 className="text-lg font-semibold">{title ?? "Dashboard"}</h1>
       </div>
 
@@ -45,6 +76,26 @@ export const Header: React.FC<HeaderProps> = ({ title, avatarSrc }) => {
         >
           <Search className="h-5 w-5 text-foreground" />
         </button>
+        {/* Messages button (brand blue) */}
+        <div className="relative">
+          <button
+            aria-label={messageCount > 0 ? `Messages (${messageCount})` : "Messages"}
+            title="Messages"
+            onClick={() => {
+              // open messages UI (placeholder)
+              // don't automatically clear the badge here so the count remains visible
+              console.log("open messages");
+            }}
+            className="header-message-btn hover:opacity-95"
+          >
+            <MessageSquare className="h-4 w-4" />
+          </button>
+          {messageCount > 0 && (
+            <span className="header-message-badge" aria-hidden>
+              {messageCount >= 20 ? "20+" : String(messageCount)}
+            </span>
+          )}
+        </div>
         <button
           aria-label="Notifications"
           className="relative p-2 rounded-full hover:bg-muted/50 transition-colors"
@@ -55,9 +106,9 @@ export const Header: React.FC<HeaderProps> = ({ title, avatarSrc }) => {
 
         <div className="relative" ref={menuRef}>
           <button
-            onClick={() => setOpen((v) => !v)}
-            aria-haspopup="true"
-            aria-expanded={open ? true : false}
+              onClick={() => setOpen((v) => !v)}
+              aria-haspopup="true"
+              aria-expanded={open}
             className="flex items-center gap-2 p-1 rounded-md hover:bg-muted/50 transition-colors"
           >
             {avatarSrc ? (
