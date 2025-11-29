@@ -1,0 +1,15 @@
+﻿[build]
+  command = "npm run build"
+  publish = "ch-stroke/.next"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Serverless functions configuration
+[functions]
+  directory = "ch-stroke/.next/standalone/ch-stroke/.next/server"
