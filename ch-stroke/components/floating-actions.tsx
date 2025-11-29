@@ -128,7 +128,7 @@ export function FloatingActions() {
                       </div>
                       <div className="flex-1 text-left">
                         <p className="font-medium">{patient.name}</p>
-                        <p className="text-sm text-muted-foreground">{patient.phone}</p>
+                        <p className="text-sm text-muted-foreground">{patient.riskLevel || "No risk data"}</p>
                       </div>
                       <Phone className="h-5 w-5 text-emerald-500" />
                     </button>
@@ -222,7 +222,7 @@ export function FloatingActions() {
                       </div>
                       <div className="flex-1 text-left">
                         <p className="font-medium">{patient.name}</p>
-                        <p className="text-sm text-muted-foreground">{patient.phone}</p>
+                        <p className="text-sm text-muted-foreground">{patient.riskLevel || "No risk data"}</p>
                       </div>
                       <MessageSquare className="h-5 w-5 text-blue-500" />
                     </button>

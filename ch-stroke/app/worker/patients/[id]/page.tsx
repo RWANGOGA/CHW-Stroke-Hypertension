@@ -11,15 +11,6 @@ import { Button } from "@/components/ui/button"
 import { Phone, MessageCircle, Pill, AlertTriangle, Calendar, Activity, Heart, Moon, ChevronLeft } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
-import dynamic from "next/dynamic"
-
-const VitalsChart = dynamic(
-  () => import("@/components/dashboard/vitals-chart").then((mod) => ({ default: mod.VitalsChart })),
-  {
-    ssr: false,
-    loading: () => <div className="h-[180px] bg-muted/30 rounded-lg animate-pulse" />,
-  },
-)
 
 interface PatientDetailPageProps {
   params: Promise<{ id: string }>
@@ -183,8 +174,22 @@ export default function PatientDetailPage({ params }: PatientDetailPageProps) {
             </Card>
           </div>
 
+          {/* Placeholder Cards for Vitals Charts */}
+          <div className="grid gap-4 md:grid-cols-3">
+            {["Heart Rate", "Daily Steps", "Sleep"].map((title, index) => (
+              <Card key={index} className="border-border/50">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base font-semibold">{title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-[180px] bg-muted/30 rounded-lg animate-pulse" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Left Column Cards */}
           <div className="grid gap-6 lg:grid-cols-3">
-            {/* Left Column */}
             <div className="space-y-6">
               {/* Medications */}
               <Card className="border-border/50">
@@ -257,88 +262,39 @@ export default function PatientDetailPage({ params }: PatientDetailPageProps) {
                   </div>
                 </CardContent>
               </Card>
-
-              {/* AI Alerts for this patient */}
-              <Card className="border-border/50">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base font-semibold">AI Insights</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {patientAlerts.slice(0, 3).map((alert) => (
-                    <div
-                      key={alert.id}
-                      className={cn(
-                        "p-3 rounded-lg border-l-4",
-                        alert.riskLevel === "high" && "border-l-red-500 bg-red-50/50",
-                        alert.riskLevel === "moderate" && "border-l-amber-500 bg-amber-50/50",
-                        alert.riskLevel === "low" && "border-l-emerald-500 bg-emerald-50/50",
-                      )}
-                    >
-                      <p className="text-sm font-medium">{alert.title}</p>
-                      <p className="text-xs text-muted-foreground mt-1">{alert.recommendedAction}</p>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
             </div>
 
-            {/* Right Column - Charts */}
+            {/* Right Column - Communication Timeline */}
             <div className="lg:col-span-2 space-y-6">
-              {/* Vitals Charts */}
-              <div className="grid gap-4 md:grid-cols-3">
-                <VitalsChart title="Heart Rate" data={heartRateData} color="#ef4444" unit=" bpm" />
-                <VitalsChart title="Daily Steps" data={stepsData} color="#3b82f6" />
-                <VitalsChart title="Sleep" data={sleepData} color="#8b5cf6" unit=" hrs" />
-              </div>
-
-              {/* Communication Timeline */}
               <Card className="border-border/50">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base font-semibold">Recent Communications</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3 max-h-[400px] overflow-y-auto">
-                    {patientLogs
-                      .slice(-10)
-                      .reverse()
-                      .map((log) => (
-                        <div key={log.id} className="flex gap-3 p-3 rounded-lg hover:bg-accent/30 transition-colors">
-                          <div
-                            className={cn(
-                              "h-8 w-8 rounded-full flex items-center justify-center shrink-0 text-xs font-medium text-white",
-                              log.channel === "whatsapp" && "bg-emerald-500",
-                              log.channel === "sms" && "bg-blue-500",
-                              log.channel === "ivr" && "bg-purple-500",
-                            )}
-                          >
-                            {log.channel.slice(0, 2).toUpperCase()}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="text-xs font-medium capitalize">{log.channel}</span>
-                              <span className="text-xs text-muted-foreground">
-                                {new Date(log.timestamp).toLocaleDateString([], { month: "short", day: "numeric" })}
-                              </span>
-                              {log.severity === "high" && (
-                                <span className="px-1.5 py-0.5 bg-red-100 text-red-700 text-[10px] rounded">High</span>
-                              )}
-                            </div>
-                            <p className="text-sm text-muted-foreground line-clamp-2">{log.message}</p>
-                            {log.extractedSymptoms.length > 0 && (
-                              <div className="flex gap-1 mt-1.5 flex-wrap">
-                                {log.extractedSymptoms.map((symptom, i) => (
-                                  <span
-                                    key={i}
-                                    className="px-1.5 py-0.5 bg-amber-100 text-amber-700 text-[10px] rounded"
-                                  >
-                                    {symptom}
-                                  </span>
-                                ))}
-                              </div>
-                            )}
-                          </div>
+                    {patientLogs.slice(-10).reverse().map((log) => (
+                      <div key={log.id} className="flex gap-3 p-3 rounded-lg hover:bg-accent/30 transition-colors">
+                        <div
+                          className={cn(
+                            "h-8 w-8 rounded-full flex items-center justify-center shrink-0 text-xs font-medium text-white",
+                            log.channel === "whatsapp" && "bg-emerald-500",
+                            log.channel === "sms" && "bg-blue-500",
+                            log.channel === "ivr" && "bg-purple-500",
+                          )}
+                        >
+                          {log.channel.slice(0, 2).toUpperCase()}
                         </div>
-                      ))}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-xs font-medium capitalize">{log.channel}</span>
+                            <span className="text-xs text-muted-foreground">
+                              {new Date(log.timestamp).toLocaleDateString([], { month: "short", day: "numeric" })}
+                            </span>
+                          </div>
+                          <p className="text-sm text-muted-foreground line-clamp-2">{log.message}</p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </CardContent>
               </Card>
