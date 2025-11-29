@@ -40,32 +40,6 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --shadow-2xs: 0 1px 0 0 rgba(0, 0, 0, 0.05);
-  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-sm:
-    0 1px 3px 0 rgba(0, 0, 0, 0.1),
-    0 1px 2px -1px rgba(0, 0, 0, 0.1);
-  --shadow-md:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -2px rgba(0, 0, 0, 0.1);
-  --shadow-lg:
-    0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -4px rgba(0, 0, 0, 0.1);
-  --shadow-xl:
-    0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 8px 10px -6px rgba(0, 0, 0, 0.1);
-  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-  --drop-shadow-xs: drop-shadow(0 1px 1px 0 rgba(0, 0, 0, 0.05));
-  --drop-shadow-sm: drop-shadow(0 1px 2px 0 rgba(0, 0, 0, 0.15));
-  --drop-shadow-md: drop-shadow(0 3px 3px 0 rgba(0, 0, 0, 0.12));
-  --drop-shadow-lg: drop-shadow(0 4px 4px 0 rgba(0, 0, 0, 0.15));
-  --drop-shadow-xl: drop-shadow(0 9px 7px 0 rgba(0, 0, 0, 0.1));
-  --drop-shadow-2xl: drop-shadow(
-    0 25px 25px 0 rgba(0, 0, 0, 0.15)
-  );
-  --inset-shadow-2xs: inset 0 1px 0 0 rgba(0, 0, 0, 0.05);
-  --inset-shadow-xs: inset 0 1px 1px 0 rgba(0, 0, 0, 0.05);
-  --inset-shadow-sm: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
 }
 
 :root {
@@ -454,4 +428,59 @@
 
 .text-responsive-xl {
   @apply text-base sm:text-lg lg:text-xl;
+}
+
+@layer utilities {
+  /* Custom gradient utilities */
+  .bg-gradient-hero {
+    background: linear-gradient(135deg, oklch(0.6 0.25 250) 0%, oklch(0.7 0.2 280) 100%);
+  }
+  
+  .bg-gradient-card {
+    background: linear-gradient(to bottom right, oklch(1 0 0) 0%, oklch(0.97 0 0 / 0.3) 100%);
+  }
+  
+  /* Custom shadow utilities */
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+  
+  .shadow-medium {
+    box-shadow: var(--shadow-medium);
+  }
+  
+  .shadow-strong {
+    box-shadow: var(--shadow-strong);
+  }
+  
+  /* Custom animations */
+  @keyframes fade-in {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  
+  @keyframes slide-up {
+    0% { 
+      opacity: 0; 
+      transform: translateY(20px);
+    }
+    100% { 
+      opacity: 1; 
+      transform: translateY(0);
+    }
+  }
+  
+  .animate-fade-in {
+    animation: fade-in 0.6s ease-out;
+  }
+  
+  .animate-slide-up {
+    animation: slide-up 0.6s ease-out;
+  }
+  
+  /* Font display utility */
+  .font-display {
+    font-family: var(--font-geist-sans), system-ui, sans-serif;
+    font-weight: 700;
+  }
 }
